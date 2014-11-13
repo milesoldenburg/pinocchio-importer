@@ -14,12 +14,22 @@ pi.load("skeleton.out", "attachment.out");
 ## Members
 ```
 struct joint {
-    int id, previousId;
-    float x, y, z;
+    int id, parent;
+    float x, y, z, distanceToParent;
 };
 
 vector<joint> joints;
 vector<vector<float>> attachments;
 size_t numJoints;
 size_t numVertices;
+```
+
+### Notes
+The distanceToParent value is Euclidean distance.
+
+You can access the parent joint by using the id as the index of the vector. For example:
+
+```  
+joint child = joints[1];  
+joint parent = joints[child.parent];  
 ```
