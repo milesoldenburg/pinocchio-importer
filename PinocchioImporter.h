@@ -7,12 +7,17 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <math.h>
 
 using namespace std;
 
 struct joint {
-    int id, previousId;
-    float x, y, z;
+    int     id,
+            parent;
+    float   x,
+            y,
+            z,
+            distanceToParent = 0.0f;
 };
 
 class PinocchioImporter {
@@ -65,7 +70,7 @@ void PinocchioImporter::load(const char * inputSkeletonFile, const char * inputA
         while (getline(skeletonFile, line)) {
             // Populate joint with data
             joint currentJoint;
-            sscanf(line.c_str(), "%i %f %f %f %i", &currentJoint.id, &currentJoint.x, &currentJoint.y, &currentJoint.z, &currentJoint.previousId);
+            sscanf(line.c_str(), "%i %f %f %f %i", &currentJoint.id, &currentJoint.x, &currentJoint.y, &currentJoint.z, &currentJoint.parent);
             
             // Add joint to array
             joints.push_back(currentJoint);
@@ -77,6 +82,19 @@ void PinocchioImporter::load(const char * inputSkeletonFile, const char * inputA
     
     // Close skeleton file
     skeletonFile.close();
+    
+    // Calculate distance to parent for every joint
+    for (size_t i = 0; i < joints.size(); i++) {
+        joint child = joints[i];
+        
+        // Only process non-root nodes
+        if (child.parent != -1) {
+            joint parent = joints[child.parent];
+            
+            // Store distance
+            joints[i].distanceToParent = sqrtf(powf(child.x - parent.x, 2.0f) + powf(child.y - parent.y, 2.0f) + powf(child.z - parent.z, 2.0f));
+        }
+    }
     
     // Open attachment file
     ifstream attachmentFile;
