@@ -3,6 +3,8 @@ pinocchio-importer
 
 Imports the skeleton and attachment files produced by [Pinocchio](http://www.mit.edu/~ibaran/autorig/pinocchio.html).
 
+This library provides easy access to joint data such as their parent, children, world location, and distance to parent joint.
+
 ## Usage
 Ensure that load() is called before accessing the members.
 
@@ -16,6 +18,7 @@ pi.load("skeleton.out", "attachment.out");
 struct joint {
     int id, parent;
     float x, y, z, distanceToParent;
+    vector<int> children;
 };
 
 vector<joint> joints;

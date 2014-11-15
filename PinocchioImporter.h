@@ -12,12 +12,13 @@
 using namespace std;
 
 struct joint {
-    int     id,
-            parent;
-    float   x,
-            y,
-            z,
-            distanceToParent = 0.0f;
+    int         id,
+                parent;
+    float       x,
+                y,
+                z,
+                distanceToParent = 0.0f;
+    vector<int> children;
 };
 
 class PinocchioImporter {
@@ -83,16 +84,15 @@ void PinocchioImporter::load(const char * inputSkeletonFile, const char * inputA
     // Close skeleton file
     skeletonFile.close();
     
-    // Calculate distance to parent for every joint
-    for (size_t i = 0; i < joints.size(); i++) {
-        joint child = joints[i];
-        
+    // Iterate every joint to calculate distance and to populate each children vector
+    for (vector<joint>::iterator it = joints.begin(); it != joints.end(); ++it) {
         // Only process non-root nodes
-        if (child.parent != -1) {
-            joint parent = joints[child.parent];
+        if (it->parent != -1) {
+            // Add current joint to list of parents children
+            joints[it->parent].children.push_back(it->id);
             
-            // Store distance
-            joints[i].distanceToParent = sqrtf(powf(child.x - parent.x, 2.0f) + powf(child.y - parent.y, 2.0f) + powf(child.z - parent.z, 2.0f));
+            // Calculate distance to parent
+            it->distanceToParent = sqrtf(powf(it->x - joints[it->parent].x, 2.0f) + powf(it->y - joints[it->parent].y, 2.0f) + powf(it->z - joints[it->parent].z, 2.0f));
         }
     }
     
