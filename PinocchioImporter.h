@@ -104,6 +104,7 @@ void PinocchioImporter::load(const char * inputSkeletonFile, const char * inputA
     if (attachmentFile.is_open()) {
         // Parse line by line until EOF
         while (getline(attachmentFile, line)) {
+            line.append(" ");
             attachments.push_back(PinocchioImporter::split(line, ' '));
         }
     }
